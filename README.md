@@ -159,6 +159,43 @@ Specify which middleware should be used for feature toggle GUI routes.
 #### <a name="prefix"></a>`'route.prefix' => 'features'`:
 Specify the prefix to use for feature toggle GUI routes - In this case, the GUI will be accessible at `http://domain.local/features`.
 
+## Commands
+
+Add a feature toggle:
+```
+$php artisan feature:add feature_name
+```
+
+Remove a feature toggle:
+```
+$php artisan feature:remove feature_name
+```
+
+Enable a feature toggle:
+```
+$php artisan feature:enable feature_name
+```
+
+Disable a feature toggle:
+```
+$php artisan feature:disable feature_name
+```
+
+Toggle a feature toggle's status:
+```
+$php artisan feature:toggle feature_name
+```
+
+Attach a role to a feature toggle:
+```
+$php artisan feature:add:role feature_name role_name
+```
+
+Detach a role from a feature toggle:
+```
+$php artisan feature:remove:role feature_name role_name
+```
+
 ## ToDo:
 
 ---
