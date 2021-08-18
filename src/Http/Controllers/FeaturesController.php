@@ -27,7 +27,8 @@ class FeaturesController extends BaseController
 
     public function store(Request $request)
     {
-        $rules = config('features.driver')::rules();
+        $rules = FeatureManager::validationRules();
+        
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {

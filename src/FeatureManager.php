@@ -6,6 +6,11 @@ use CharlGottschalk\FeatureToggle\Transformers\Transformer;
 
 class FeatureManager
 {
+    public static function validationRules()
+    {
+        return config('features.driver')::rules();
+    }
+
     public static function index($take, $page)
     {
         $results = config('features.driver')::index($take, $page);
