@@ -15,7 +15,6 @@ class FeatureTransformer {
     }
 
     public static function transformSingle($result) {
-//        dd($result);
         if (!empty($result->error)) {
             return [
                 '__error' => true,

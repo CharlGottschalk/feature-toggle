@@ -133,4 +133,11 @@ class Api implements DriverInterface
     {
         return new ApiTransformer;
     }
+
+    public static function rules()
+    {
+        return [
+            'name' => 'required'
+        ];
+    }
 }

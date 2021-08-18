@@ -27,9 +27,8 @@ class FeaturesController extends BaseController
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:CharlGottschalk\FeatureToggle\Models\Feature'
-        ]);
+        $rules = config('features.driver')::rules();
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return redirect()->route('features.toggle.index')
