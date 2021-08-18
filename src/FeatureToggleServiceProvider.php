@@ -29,6 +29,10 @@ class FeatureToggleServiceProvider extends ServiceProvider
             return new Feature();
         });
 
+        $this->app->bind('featureManager', function($app) {
+            return new FeatureManager();
+        });
+
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'features');
     }
 
@@ -41,9 +45,12 @@ class FeatureToggleServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-        $this->registerViews();
         $this->registerBlade();
-        $this->registerRoutes();
+
+        if (config('features.gui')) {
+            $this->registerViews();
+            $this->registerRoutes();
+        }
 
         if ($this->app->runningInConsole()) {
             $this->registerCommands();

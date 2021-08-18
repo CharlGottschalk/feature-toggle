@@ -2,8 +2,7 @@
 
 namespace CharlGottschalk\Featuretoggle\Console;
 
-use CharlGottschalk\FeatureToggle\Models\Feature;
-use CharlGottschalk\FeatureToggle\Models\FeatureRole;
+use CharlGottschalk\FeatureToggle\FeatureManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -17,18 +16,10 @@ class RemoveFeature extends Command
     {
         $feature = Str::of($this->argument('feature'))->lower()->snake();
 
-        $featureModel = Feature::on(config('features.connection', config('database.default')))
-                                ->where('name', $feature)
-                                ->first();
-
-        if (!empty($featureModel)) {
-
-            $featureModel->roles()->detach();
-            $featureModel->delete();
-
+        if (FeatureManager::deleteByName($feature)) {
             $this->info("Feature ({$feature}) and associated roles removed");
         } else {
-            $this->info("Feature ({$feature}) does not exist");
+            $this->error("Feature ({$feature}) does not exist");
         }
     }
 }

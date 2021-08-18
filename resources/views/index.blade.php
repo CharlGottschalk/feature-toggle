@@ -18,7 +18,7 @@
                 </thead>
                 <tbody class="text-gray-600">
                 @include('feature-toggle::partials.create')
-                @foreach($features as $feature)
+                @foreach($features->data as $feature)
                     <tr class="hover:bg-gray-100">
                         <td class="w-2 border border-l-0 px-4 py-2 text-center text-{{$feature->enabled ? 'green' : 'red'}}-500"><i class="fas fa-circle"></i></td>
                         <td class="border border-l-0 px-4 py-2 lowercase">{{$feature->name}}</td>
@@ -39,8 +39,8 @@
 
                 </tbody>
             </table>
-            <div class="flex justify-end pt-4 pr-4 pb-4">
-                {{ $features->links() }}
-            </div>
+{{--            <div class="flex justify-end pt-4 pr-4 pb-4">--}}
+{{--                {{ $features->links() }}--}}
+{{--            </div>--}}
         </div>
 @endsection

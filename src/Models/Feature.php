@@ -11,6 +11,13 @@ class Feature extends Model
     protected $guarded = [];
 
     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that should be cast.
      *
      * @var array
@@ -46,6 +53,11 @@ class Feature extends Model
 
     public function disable() {
         $this->enabled = false;
+        $this->save();
+    }
+
+    public function toggle() {
+        $this->enabled = !$this->enabled;
         $this->save();
     }
 }

@@ -39,12 +39,12 @@
                 Roles
             </div>
 
-            @foreach($linkedRoles as $role)
+            @foreach($feature->roles as $role)
                 <div class="p-6 flex flex-row justify-between items-center text-gray-600 border-b">
                     <div class="flex items-center">
                         <h1>
-                            <input name="roles[]" value="{{ $role['role']->id }}" type="checkbox" {{ $role['linked'] ? 'checked' : null }} class="m-0 p-0 border bg-gray-100 outline-none focus:ring-2 focus:ring-indigo-400 rounded" />
-                            {{ $role['role'][config('features.roles.column')] }}
+                            <input name="role_ids[]" value="{{ $role->id }}" type="checkbox" {{ $role->linked ? 'checked' : null }} class="m-0 p-0 border bg-gray-100 outline-none focus:ring-2 focus:ring-indigo-400 rounded" />
+                            {{ $role->name }}
                         </h1>
                     </div>
                 </div>

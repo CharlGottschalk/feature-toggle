@@ -2,44 +2,27 @@
 
 namespace CharlGottschalk\FeatureToggle\Http\Controllers;
 
-use CharlGottschalk\FeatureToggle\Models\Feature;
+use CharlGottschalk\FeatureToggle\FeatureManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class FeaturesController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $features = Feature::on(config('features.connection', config('database.default')))
-                                ->orderBy('name')
-                                ->paginate(20);
+        $features = FeatureManager::index(20, $request->input('page'));
         return view('feature-toggle::index', compact('features'));
     }
 
     public function edit(Request $request, $id)
     {
-        $roles = config('features.roles.model')::orderBy(config('features.roles.column'))->get();
-        $feature = Feature::on(config('features.connection', config('database.default')))
-                            ->with('roles')
-                            ->find($id);
+        $feature = FeatureManager::show($id);
 
-        $linkedRoles = [];
-        foreach ($roles as $role) {
-            $linked = false;
-
-            if($feature->roles->contains(function ($value) use ($role) {
-                return $role->id == $value->id;
-            })) {
-                $linked = true;
-            }
-
-            $linkedRoles[] = [
-                'linked' => $linked,
-                'role' => $role
-            ];
+        if (empty($feature)) {
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Could not find that feature"]);
         }
 
-        return view('feature-toggle::edit', compact('feature', 'linkedRoles'));
+        return view('feature-toggle::edit', compact('feature'));
     }
 
     public function store(Request $request)
@@ -49,50 +32,72 @@ class FeaturesController extends BaseController
         ]);
 
         if ($validator->fails()) {
-            session()->flash('test', 'Test');
             return redirect()->route('features.toggle.index')
                 ->withErrors($validator)
                 ->withInput();
         }
 
-        $feature = new Feature;
-        $feature->name = $request->input('name');
-        $feature->enabled = $request->has('enabled');
-        $feature->on(config('features.connection', config('database.default')))
-                ->save();
+        $enabled = $request->has('enabled');
+
+        $feature = FeatureManager::store($request->input('name'), $enabled);
+
+        if (empty($feature)) {
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Error storing feature"]);
+        }
+
         return redirect()->route('features.toggle.index')->with('alert', ['type' => 'success', 'message' => "{$feature->name} added"]);
     }
 
     public function update(Request $request, $id)
     {
-        $feature = Feature::on(config('features.connection', config('database.default')))
-                            ->find($id);
-        $feature->roles()->sync($request->input('roles'));
+        $validator = Validator::make($request->all(), [
+            'role_ids' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('features.toggle.index')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $feature = FeatureManager::update($id, $request->input('role_ids'));
+
+        if (empty($feature)) {
+
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Could not find that feature"]);
+        }
+
         return redirect()->route('features.toggle.index')->with('alert', ['type' => 'success', 'message' => "{$feature->name} roles updated"]);
     }
 
-    public function delete(Request $request, $id)
+    public function delete($id)
     {
-        $feature = Feature::on(config('features.connection', config('database.default')))
-                            ->find($id);
-        $feature->roles()->detach();
-        $feature->delete();
-        return redirect()->route('features.toggle.index')->with('alert', ['type' => '', 'message' => "{$feature->name} removed"]);
+        if (FeatureManager::delete($id)) {
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => '', 'message' => "Feature removed"]);
+        }
+
+        return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Error removing that feature"]);
     }
 
-    public function enable(Request $request, $id)
+    public function enable($id)
     {
-        $feature = Feature::on(config('features.connection', config('database.default')))
-                            ->find($id);
-        $feature->enable();
+        $feature = FeatureManager::enable($id);
+
+        if (empty($feature)) {
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Error enabling that feature"]);
+        }
+
         return redirect()->route('features.toggle.index')->with('alert', ['type' => 'default', 'message' => "{$feature->name} enabled"]);
     }
 
-    public function disable(Request $request, $id)
+    public function disable($id)
     {
-        $feature = Feature::on(config('features.connection', config('database.default')))
-                            ->find($id);
-        $feature->disable();
+        $feature = FeatureManager::disable($id);
+
+        if (empty($feature)) {
+            return redirect()->route('features.toggle.index')->with('alert', ['type' => 'error', 'message' => "Error disabling that feature"]);
+        }
+
         return redirect()->route('features.toggle.index')->with('alert', ['type' => '', 'message' => "{$feature->name} disabled"]);
     }
 }

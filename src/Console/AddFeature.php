@@ -2,7 +2,7 @@
 
 namespace CharlGottschalk\Featuretoggle\Console;
 
-use CharlGottschalk\FeatureToggle\Models\Feature;
+use CharlGottschalk\FeatureToggle\FeatureManager;
 use Illuminate\Console\Command;
 
 class AddFeature extends Command
@@ -15,14 +15,15 @@ class AddFeature extends Command
     {
         $feature = $this->argument('feature');
         $enabled = $this->argument('enabled') == 'true';
-        $featureModel = new Feature;
-        $featureModel->name = $feature;
-        $featureModel->enabled = $enabled;
-        $featureModel->on(config('features.connection', config('database.default')))
-                    ->save();
 
-        $state = $enabled ? 'enabled' : 'disabled';
+        $feature = FeatureManager::store($feature, $enabled);
 
-        $this->info("Feature ({$feature}) created and {$state}");
+        if(isset($feature['__error'])) {
+            $this->error("Error storing feature");
+        } else {
+            $state = $enabled ? 'enabled' : 'disabled';
+
+            $this->info("Feature ({$feature}) created and {$state}");
+        }
     }
 }

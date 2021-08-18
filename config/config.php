@@ -27,6 +27,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default status
+    |--------------------------------------------------------------------------
+    |
+    | This option controls how a non-existent feature's 'enabled' status is considered.
+    |
+    */
+    'default' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable GUI
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether the GUI is accessible.
+    |
+    */
+    'gui' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Database connection
     |--------------------------------------------------------------------------
     |
@@ -104,7 +124,7 @@ return [
     'route' => [
         /*
         |--------------------------------------------------------------------------
-        | Auth middleware
+        | Route middleware
         |--------------------------------------------------------------------------
         |
         | The middleware to use for feature toggle routes.
@@ -121,5 +141,43 @@ return [
         |
         */
         'prefix' => 'features',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Driver
+    |--------------------------------------------------------------------------
+    |
+    | This option controls how feature toggles are retrieved.
+    | Requires CharlGottschalk\FeatureToggleLumen to use API driver.
+    | Options:
+    | - \CharlGottschalk\FeatureToggle\Drivers\Db::class
+    | - \CharlGottschalk\FeatureToggle\Drivers\Api::class
+    |
+    */
+    'driver' => \CharlGottschalk\FeatureToggle\Drivers\Db::class,
+
+    'api' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Url
+        |--------------------------------------------------------------------------
+        |
+        | The base url to the api.
+        | Note that this url will be appended with 'route.prefix' to access feature toggle lumen.
+        |
+        */
+        'route' => 'https://api-domain.example/',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Headers
+        |--------------------------------------------------------------------------
+        |
+        | Provide the headers for the API requests.
+        | Can be an array or a class with a 'getHeaders' function that returns an array.
+        |
+        */
+        'headers' => [],
     ],
 ];
